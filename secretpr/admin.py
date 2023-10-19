@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User, Service, Provider, Review
-
-# from django.contrib.auth.models import Group
+from django.contrib.auth.admin import GroupAdmin
+from django.contrib.auth.models import Group
 from django.contrib.admin import AdminSite
 
 
@@ -63,7 +63,13 @@ class CustomAdminSite(AdminSite):
 
     def get_app_list(self, request, app_label=None):
         """https://books.agiliq.com/projects/django-admin-cookbook/en/latest/set_ordering.html?highlight=order#how-to-set-ordering-of-apps-and-models-in-django-admin-dashboard"""
-        ordering = {"Users": 1, "Services": 2, "Providers": 3, "Reviews": 4}
+        ordering = {
+            "Groups": 0,
+            "Users": 1,
+            "Services": 2,
+            "Providers": 3,
+            "Reviews": 4,
+        }
         app_dict = self._build_app_dict(request)
         app_list = sorted(app_dict.values(), key=lambda x: x["name"].lower())
         for app in app_list:
@@ -76,3 +82,4 @@ custom_admin_site.register(User, CustomUserAdmin)
 custom_admin_site.register(Service, ServiceAdmin)
 custom_admin_site.register(Provider, ProviderAdmin)
 custom_admin_site.register(Review, ReviewAdmin)
+custom_admin_site.register(Group, GroupAdmin)
