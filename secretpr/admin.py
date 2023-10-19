@@ -6,18 +6,34 @@ from .models import User, Service, Provider, Review
 from django.contrib.admin import AdminSite
 
 
+class CustomUserAdmin(UserAdmin):
+    pass
+
+
 class ServiceAdmin(admin.ModelAdmin):
+    readonly_fields = ("created_by",)
     list_display = ("name",)
-    list_display = ("name",)
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.created_by = request.user  # type: ignore
+        super().save_model(request, obj, form, change)
 
 
 class ProviderAdmin(admin.ModelAdmin):
+    readonly_fields = ("created_by",)
     list_display = ("name", "service", "created_at", "updated_at")
     list_filter = ("service", "created_at", "updated_at")
     search_fields = ("name", "service")
 
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.created_by = request.user  # type: ignore
+        super().save_model(request, obj, form, change)
+
 
 class ReviewAdmin(admin.ModelAdmin):
+    readonly_fields = ("user",)
     list_display = (
         "provider",
         "service",
@@ -32,15 +48,10 @@ class ReviewAdmin(admin.ModelAdmin):
     def service(self, obj):
         return obj.provider.service.name
 
-
-# def has_view_permission(self, request) -> bool:
-#     return request.user.is_authenticated
-
-# def has_view_permission(self, request, obj=None):
-#     return request.user.is_authenticated
-
-# def has_module_permission(self, request) -> bool:
-#     return request.user.is_authenticated
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.user = request.user  # type: ignore
+        super().save_model(request, obj, form, change)
 
 
 class CustomAdminSite(AdminSite):
@@ -61,10 +72,7 @@ class CustomAdminSite(AdminSite):
 
 
 custom_admin_site = CustomAdminSite()
-
-
-# custom_admin_site.unregister(Group)
-custom_admin_site.register(User, UserAdmin)
-custom_admin_site.register(Provider, ProviderAdmin)
+custom_admin_site.register(User, CustomUserAdmin)
 custom_admin_site.register(Service, ServiceAdmin)
+custom_admin_site.register(Provider, ProviderAdmin)
 custom_admin_site.register(Review, ReviewAdmin)

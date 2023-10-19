@@ -10,7 +10,9 @@ class User(AbstractUser):
 
 class Service(models.Model):
     name = models.CharField(max_length=255)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -21,7 +23,9 @@ class Service(models.Model):
 class Provider(models.Model):
     name = models.CharField(max_length=255)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
