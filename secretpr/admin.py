@@ -19,6 +19,12 @@ class ServiceAdmin(admin.ModelAdmin):
             obj.created_by = request.user  # type: ignore
         super().save_model(request, obj, form, change)
 
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return request.user.is_superuser
+
 
 class ProviderAdmin(admin.ModelAdmin):
     readonly_fields = ("created_by",)
@@ -30,6 +36,12 @@ class ProviderAdmin(admin.ModelAdmin):
         if not obj.pk:
             obj.created_by = request.user  # type: ignore
         super().save_model(request, obj, form, change)
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return request.user.is_superuser
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -52,6 +64,16 @@ class ReviewAdmin(admin.ModelAdmin):
         if not obj.pk:
             obj.user = request.user  # type: ignore
         super().save_model(request, obj, form, change)
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        if obj is None:
+            return True
+        return obj.user == request.user
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        if obj is None:
+            return True
+        return obj.user == request.user
 
 
 class CustomAdminSite(AdminSite):
